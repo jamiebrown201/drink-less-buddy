@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'core/di/service_locator.dart';
+import 'core/design/app_theme.dart';
+import 'core/animations/slide_fade_transition.dart';
 import 'screens/onboarding/age_verification_screen.dart';
-import 'screens/onboarding/legal_disclaimer_screen.dart';
 import 'screens/home/home_screen.dart';
-import 'providers/drink_provider.dart';
-import 'providers/intention_provider.dart';
-import 'providers/user_provider.dart';
-import 'utils/constants.dart';
+import 'providers/drink_provider_refactored.dart';
+import 'providers/intention_provider_refactored.dart';
+import 'providers/user_provider_refactored.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive for local storage
-  await Hive.initFlutter();
+  // Set system UI overlay style
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
 
-  // Initialize Supabase (replace with your project URL and anon key)
-  // For now, we'll use local storage only to minimize costs
-  // Uncomment when ready to deploy:
-  // await Supabase.initialize(
-  //   url: AppConstants.supabaseUrl,
-  //   anonKey: AppConstants.supabaseAnonKey,
-  // );
+  // Initialize dependency injection
+  await ServiceLocator.instance.init();
 
   runApp(const DrinkLessBuddyApp());
 }
@@ -34,20 +36,54 @@ class DrinkLessBuddyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => DrinkProvider()),
-        ChangeNotifierProvider(create: (_) => IntentionProvider()),
+        ChangeNotifierProvider<UserProvider>(
+          create: (_) => ServiceLocator.get<UserProvider>(),
+        ),
+        ChangeNotifierProvider<DrinkProvider>(
+          create: (_) => ServiceLocator.get<DrinkProvider>(),
+        ),
+        ChangeNotifierProvider<IntentionProvider>(
+          create: (_) => ServiceLocator.get<IntentionProvider>(),
+        ),
       ],
       child: MaterialApp(
         title: 'Drink Less Buddy',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: AppConstants.primaryColor,
+            seedColor: AppTheme.primaryBlue,
             brightness: Brightness.light,
           ),
           useMaterial3: true,
-          fontFamily: 'Helvetica Neue',
+          fontFamily: AppTheme.fontFamily,
+          scaffoldBackgroundColor: AppTheme.backgroundCream,
+          // Custom text theme
+          textTheme: const TextTheme(
+            displayLarge: AppTheme.displayLarge,
+            displayMedium: AppTheme.displayMedium,
+            headlineLarge: AppTheme.headlineLarge,
+            headlineMedium: AppTheme.headlineMedium,
+            titleLarge: AppTheme.titleLarge,
+            titleMedium: AppTheme.titleMedium,
+            bodyLarge: AppTheme.bodyLarge,
+            bodyMedium: AppTheme.bodyMedium,
+            bodySmall: AppTheme.bodySmall,
+            labelLarge: AppTheme.labelLarge,
+            labelMedium: AppTheme.labelMedium,
+          ),
+          // Button theme
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacing24,
+                vertical: AppTheme.spacing16,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              ),
+            ),
+          ),
         ),
         home: const AppInitializer(),
       ),
@@ -70,28 +106,86 @@ class _AppInitializerState extends State<AppInitializer> {
   }
 
   Future<void> _checkFirstLaunch() async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userProvider = context.read<UserProvider>();
     await userProvider.loadUserData();
 
-    // Check if user has completed onboarding
     if (!mounted) return;
 
-    if (!userProvider.hasCompletedOnboarding) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const AgeVerificationScreen()),
-      );
-    } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
+    // Handle errors
+    if (userProvider.hasError) {
+      _showErrorAndRetry(userProvider.error!.message);
+      return;
     }
+
+    // Navigate with custom transition
+    final destination = userProvider.hasCompletedOnboarding
+        ? const HomeScreen()
+        : const AgeVerificationScreen();
+
+    Navigator.of(context).pushReplacement(
+      SlideFadeRoute(page: destination),
+    );
+  }
+
+  void _showErrorAndRetry(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.error_outline,
+              color: AppTheme.dangerRose,
+            ),
+            const SizedBox(width: AppTheme.spacing12),
+            const Text('Initialization Error'),
+          ],
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _checkFirstLaunch();
+            },
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundCream,
       body: Center(
-        child: CircularProgressIndicator(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppTheme.primaryBlue,
+                ),
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacing24),
+            Text(
+              'Initializing...',
+              style: AppTheme.bodyMedium.copyWith(
+                color: AppTheme.textSecondary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
