@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import 'core/di/service_locator.dart';
 import 'core/design/app_theme.dart';
 import 'core/animations/slide_fade_transition.dart';
-import 'screens/onboarding/age_verification_screen.dart';
-import 'screens/home/home_screen.dart';
+import 'screens/onboarding/age_verification_screen_animated.dart';
+import 'screens/home/home_screen_animated.dart';
 import 'providers/drink_provider_refactored.dart';
 import 'providers/intention_provider_refactored.dart';
 import 'providers/user_provider_refactored.dart';
@@ -119,8 +119,8 @@ class _AppInitializerState extends State<AppInitializer> {
 
     // Navigate with custom transition
     final destination = userProvider.hasCompletedOnboarding
-        ? const HomeScreen()
-        : const AgeVerificationScreen();
+        ? const HomeScreenAnimated()
+        : const AgeVerificationScreenAnimated();
 
     Navigator.of(context).pushReplacement(
       SlideFadeRoute(page: destination),

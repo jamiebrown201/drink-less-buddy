@@ -7,16 +7,16 @@ import '../../core/widgets/animated_card.dart';
 import '../../core/animations/staggered_list.dart';
 import '../../core/animations/slide_fade_transition.dart';
 import '../../core/services/haptic_service.dart';
-import '../home/home_screen.dart';
+import '../home/home_screen_animated.dart';
 
-class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({super.key});
+class WelcomeScreenAnimated extends StatefulWidget {
+  const WelcomeScreenAnimated({super.key});
 
   @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
+  State<WelcomeScreenAnimated> createState() => _WelcomeScreenAnimatedState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenAnimatedState extends State<WelcomeScreenAnimated> {
   final TextEditingController _goalController = TextEditingController();
   bool _useUKGuideline = true;
 
@@ -250,7 +250,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if (success) {
       await HapticService.success();
       Navigator.of(context).pushReplacement(
-        SlideFadeRoute(page: const HomeScreen()),
+        SlideFadeRoute(page: const HomeScreenAnimated()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

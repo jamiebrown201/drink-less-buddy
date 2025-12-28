@@ -12,8 +12,8 @@ import '../../core/widgets/glass_button.dart';
 import '../../core/animations/staggered_list.dart';
 import '../../core/animations/slide_fade_transition.dart';
 import '../../core/services/haptic_service.dart';
-import '../intentions/set_intention_screen.dart';
-import 'log_drink_screen.dart';
+import '../intentions/set_intention_screen_animated.dart';
+import 'log_drink_screen_animated.dart';
 
 class DrinksTabAnimated extends StatelessWidget {
   const DrinksTabAnimated({super.key});
@@ -93,7 +93,7 @@ class DrinksTabAnimated extends StatelessWidget {
                         onPressed: () async {
                           await HapticService.mediumImpact();
                           if (context.mounted) {
-                            context.pushWithSlide(const LogDrinkScreen());
+                            context.pushWithSlide(const LogDrinkScreenAnimated());
                           }
                         },
                       ),
@@ -298,7 +298,7 @@ class DrinksTabAnimated extends StatelessWidget {
                 onPressed: () async {
                   await HapticService.lightImpact();
                   if (context.mounted) {
-                    context.pushWithSlide(const SetIntentionScreen());
+                    context.pushWithSlide(const SetIntentionScreenAnimated());
                   }
                 },
                 child: const Text('Set'),

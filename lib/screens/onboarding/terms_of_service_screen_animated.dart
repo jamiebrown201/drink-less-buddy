@@ -196,7 +196,7 @@ class _TermsOfServiceScreenAnimatedState
 
     await HapticService.success();
     Navigator.of(context).pushReplacement(
-      SlideFadeRoute(page: const WelcomeScreen()),
+      SlideFadeRoute(page: const WelcomeScreenAnimated()),
     );
   }
 }
