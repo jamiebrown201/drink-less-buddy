@@ -1,4 +1,5 @@
 import 'package:drink_less_buddy/core/error/failures.dart';
+import 'package:drink_less_buddy/core/utils/result.dart';
 import 'package:drink_less_buddy/models/drink.dart';
 import 'package:drink_less_buddy/models/intention.dart';
 import 'package:drink_less_buddy/models/user.dart';
@@ -125,19 +126,17 @@ class MockDrinkRepository implements DrinkRepository {
   }
 
   @override
-  Future<Result<void>> clearAllDrinks() async {
+  Future<Result<void>> clearAll() async {
     _drinks.clear();
     return const Success(null);
   }
 
   @override
-  Future<Result<Drink?>> getDrinkById(String id) async {
-    try {
-      final drink = _drinks.firstWhere((d) => d.id == id);
-      return Success(drink);
-    } catch (e) {
-      return const Success(null);
-    }
+  Future<Result<List<Drink>>> getDrinksInRange(DateTime start, DateTime end) async {
+    final filtered = _drinks.where((d) {
+      return d.timestamp.isAfter(start) && d.timestamp.isBefore(end);
+    }).toList();
+    return Success(filtered);
   }
 }
 
@@ -173,9 +172,23 @@ class MockIntentionRepository implements IntentionRepository {
   }
 
   @override
-  Future<Result<void>> clearAllIntentions() async {
+  Future<Result<void>> clearAll() async {
     _intentions.clear();
     return const Success(null);
+  }
+
+  @override
+  Future<Result<List<Intention>>> getIntentionsForDate(DateTime date) async {
+    final targetDay = DateTime(date.year, date.month, date.day);
+    final filtered = _intentions.where((i) {
+      final intentionDay = DateTime(
+        i.intentionDate.year,
+        i.intentionDate.month,
+        i.intentionDate.day,
+      );
+      return intentionDay.isAtSameMomentAs(targetDay);
+    }).toList();
+    return Success(filtered);
   }
 }
 
@@ -195,14 +208,26 @@ class MockUserRepository implements UserRepository {
   }
 
   @override
-  Future<Result<void>> updateUser(User user) async {
-    _user = user;
+  Future<Result<void>> deleteUser() async {
+    _user = null;
     return const Success(null);
   }
 
   @override
-  Future<Result<void>> deleteUser() async {
-    _user = null;
+  Future<Result<void>> updateWeeklyGoal(double goal) async {
+    if (_user == null) {
+      return const Error(StorageFailure('User not found'));
+    }
+    _user = _user!.copyWith(weeklyGoalUnits: goal);
+    return const Success(null);
+  }
+
+  @override
+  Future<Result<void>> upgradeToPremium() async {
+    if (_user == null) {
+      return const Error(StorageFailure('User not found'));
+    }
+    _user = _user!.copyWith(isPremium: true);
     return const Success(null);
   }
 }
