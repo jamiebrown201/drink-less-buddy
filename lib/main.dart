@@ -13,12 +13,12 @@ import 'providers/user_provider_refactored.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set system UI overlay style
+  // Set system UI overlay style - warm theme
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.white,
+      systemNavigationBarColor: AppTheme.backgroundCream,
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
@@ -102,7 +102,10 @@ class _AppInitializerState extends State<AppInitializer> {
   @override
   void initState() {
     super.initState();
-    _checkFirstLaunch();
+    // Delay to avoid calling setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkFirstLaunch();
+    });
   }
 
   Future<void> _checkFirstLaunch() async {

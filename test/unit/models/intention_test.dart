@@ -45,7 +45,7 @@ void main() {
         userId: 'user123',
       );
 
-      expect(intention.isForTomorrow, isTrue);
+      expect(intention.isForTomorrow(), isTrue);
     });
 
     test('isForTomorrow should return false for today', () {
@@ -57,7 +57,7 @@ void main() {
         userId: 'user123',
       );
 
-      expect(intention.isForTomorrow, isFalse);
+      expect(intention.isForTomorrow(), isFalse);
     });
 
     test('isForToday should return true for today', () {
@@ -69,7 +69,7 @@ void main() {
         userId: 'user123',
       );
 
-      expect(intention.isForToday, isTrue);
+      expect(intention.isForToday(), isTrue);
     });
 
     test('isForToday should return false for tomorrow', () {
@@ -81,7 +81,7 @@ void main() {
         userId: 'user123',
       );
 
-      expect(intention.isForToday, isFalse);
+      expect(intention.isForToday(), isFalse);
     });
 
     test('should serialize to JSON correctly', () {
@@ -100,12 +100,12 @@ void main() {
       final json = intention.toJson();
 
       expect(json['id'], 'test-id');
-      expect(json['createdAt'], createdAt.toIso8601String());
-      expect(json['intentionDate'], intentionDate.toIso8601String());
+      expect(json['created_at'], createdAt.toIso8601String());
+      expect(json['intention_date'], intentionDate.toIso8601String());
       expect(json['activity'], 'Morning workout');
       expect(json['time'], '8:00 AM');
       expect(json['reason'], 'Stay healthy');
-      expect(json['userId'], 'user123');
+      expect(json['user_id'], 'user123');
     });
 
     test('should deserialize from JSON correctly', () {
@@ -113,12 +113,12 @@ void main() {
       final intentionDate = DateTime(2025, 1, 2);
       final json = {
         'id': 'test-id',
-        'createdAt': createdAt.toIso8601String(),
-        'intentionDate': intentionDate.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
+        'intention_date': intentionDate.toIso8601String(),
         'activity': 'Morning workout',
         'time': '8:00 AM',
         'reason': 'Stay healthy',
-        'userId': 'user123',
+        'user_id': 'user123',
       };
 
       final intention = Intention.fromJson(json);
@@ -135,12 +135,12 @@ void main() {
     test('should handle JSON with null optional fields', () {
       final json = {
         'id': 'test-id',
-        'createdAt': DateTime.now().toIso8601String(),
-        'intentionDate': DateTime.now().toIso8601String(),
+        'created_at': DateTime.now().toIso8601String(),
+        'intention_date': DateTime.now().toIso8601String(),
         'activity': 'Test',
         'time': null,
         'reason': null,
-        'userId': 'user123',
+        'user_id': 'user123',
       };
 
       final intention = Intention.fromJson(json);

@@ -5,36 +5,37 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  // Brand Colors - Calming yet vibrant
-  static const Color primaryBlue = Color(0xFF5B8DEF); // Softer blue
-  static const Color secondaryGreen = Color(0xFF2DD4BF); // Teal/turquoise
-  static const Color accentPurple = Color(0xFF8B5CF6); // Purple accent
-  static const Color warningAmber = Color(0xFFFBBF24); // Warm amber
-  static const Color dangerRose = Color(0xFFF43F5E); // Rose red
+  // Brand Colors - Warm and inviting
+  static const Color primaryBlue = Color(0xFF5B7B9A); // Muted slate blue
+  static const Color secondaryGreen = Color(0xFF6B9080); // Sage green
+  static const Color accentPurple = Color(0xFF9B7E6B); // Warm taupe
+  static const Color warningAmber = Color(0xFFD4A574); // Warm caramel
+  static const Color dangerRose = Color(0xFFB85C5C); // Muted terracotta
 
-  // Neutral Colors
-  static const Color backgroundCream = Color(0xFFFAFAF8); // Off-white
-  static const Color surfaceWhite = Color(0xFFFFFFFF);
-  static const Color textPrimary = Color(0xFF1F2937); // Near black
-  static const Color textSecondary = Color(0xFF6B7280); // Gray
-  static const Color textTertiary = Color(0xFF9CA3AF); // Light gray
-  static const Color divider = Color(0xFFE5E7EB);
+  // Neutral Colors - Warm Sand/Beige Palette
+  static const Color backgroundCream = Color(0xFFF5EDE4); // Warm sand
+  static const Color surfaceWhite = Color(0xFFFAF7F2); // Warm off-white
+  static const Color cardBackground = Color(0xFFFFFBF7); // Cream card
+  static const Color textPrimary = Color(0xFF3D3229); // Warm dark brown
+  static const Color textSecondary = Color(0xFF6B5D52); // Warm gray-brown
+  static const Color textTertiary = Color(0xFF9C8E82); // Light warm gray
+  static const Color divider = Color(0xFFE5DDD4); // Warm divider
 
-  // Gradients
+  // Gradients - Warm tones
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF5B8DEF), Color(0xFF8B5CF6)],
+    colors: [Color(0xFF5B7B9A), Color(0xFF6B9080)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient successGradient = LinearGradient(
-    colors: [Color(0xFF2DD4BF), Color(0xFF34D399)],
+    colors: [Color(0xFF6B9080), Color(0xFF7FA88F)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient warningGradient = LinearGradient(
-    colors: [Color(0xFFFBBF24), Color(0xFFF59E0B)],
+    colors: [Color(0xFFD4A574), Color(0xFFC99B6B)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -66,7 +67,9 @@ class AppTheme {
 
   // Spacing
   static const double spacing4 = 4.0;
+  static const double spacing6 = 6.0;
   static const double spacing8 = 8.0;
+  static const double spacing10 = 10.0;
   static const double spacing12 = 12.0;
   static const double spacing16 = 16.0;
   static const double spacing20 = 20.0;
@@ -166,6 +169,22 @@ class AppTheme {
     height: 1.4,
     color: textSecondary,
     letterSpacing: 0.5,
+  );
+
+  static const TextStyle labelSmall = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.w500,
+    height: 1.4,
+    color: textTertiary,
+    letterSpacing: 0.4,
+  );
+
+  static const TextStyle displaySmall = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    height: 1.2,
+    color: textPrimary,
+    letterSpacing: -0.3,
   );
 
   // Animation Durations

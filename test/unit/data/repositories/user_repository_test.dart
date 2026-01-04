@@ -8,7 +8,7 @@ import 'package:drink_less_buddy/core/error/failures.dart';
 void main() {
   group('UserRepository', () {
     late UserRepository repository;
-    late StorageService storage;
+    late SharedPrefsStorageService storage;
 
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
@@ -28,11 +28,12 @@ void main() {
       test('should return saved user', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
           hasCompletedOnboarding: true,
           hasAcceptedTerms: true,
-          hasConfirmedAge: true,
+          isOver18: true,
         );
 
         await repository.saveUser(user);
@@ -48,11 +49,12 @@ void main() {
       test('should deserialize user correctly', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 21.5,
           isPremium: true,
           hasCompletedOnboarding: true,
           hasAcceptedTerms: true,
-          hasConfirmedAge: true,
+          isOver18: true,
         );
 
         await repository.saveUser(user);
@@ -64,7 +66,7 @@ void main() {
         expect(result.value!.isPremium, true);
         expect(result.value!.hasCompletedOnboarding, true);
         expect(result.value!.hasAcceptedTerms, true);
-        expect(result.value!.hasConfirmedAge, true);
+        expect(result.value!.isOver18, true);
       });
     });
 
@@ -72,11 +74,12 @@ void main() {
       test('should save user successfully', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
           hasCompletedOnboarding: true,
           hasAcceptedTerms: true,
-          hasConfirmedAge: true,
+          isOver18: true,
         );
 
         final result = await repository.saveUser(user);
@@ -91,12 +94,14 @@ void main() {
       test('should overwrite existing user', () async {
         final user1 = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
         );
 
         final user2 = User(
           id: 'user456',
+          createdAt: DateTime(2025, 1, 2),
           weeklyGoalUnits: 21.0,
           isPremium: true,
         );
@@ -114,11 +119,12 @@ void main() {
       test('should preserve all user properties', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.5,
           isPremium: true,
           hasCompletedOnboarding: true,
           hasAcceptedTerms: true,
-          hasConfirmedAge: true,
+          isOver18: true,
         );
 
         await repository.saveUser(user);
@@ -131,12 +137,13 @@ void main() {
         expect(saved.isPremium, true);
         expect(saved.hasCompletedOnboarding, true);
         expect(saved.hasAcceptedTerms, true);
-        expect(saved.hasConfirmedAge, true);
+        expect(saved.isOver18, true);
       });
 
       test('should handle null weeklyGoalUnits', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: null,
           isPremium: false,
         );
@@ -153,6 +160,7 @@ void main() {
       test('should delete existing user', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
         );
@@ -181,6 +189,7 @@ void main() {
       test('should update weekly goal for existing user', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
         );
@@ -198,11 +207,12 @@ void main() {
       test('should preserve other user properties', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: true,
           hasCompletedOnboarding: true,
           hasAcceptedTerms: true,
-          hasConfirmedAge: true,
+          isOver18: true,
         );
 
         await repository.saveUser(user);
@@ -216,7 +226,7 @@ void main() {
         expect(result.value!.isPremium, true);
         expect(result.value!.hasCompletedOnboarding, true);
         expect(result.value!.hasAcceptedTerms, true);
-        expect(result.value!.hasConfirmedAge, true);
+        expect(result.value!.isOver18, true);
       });
 
       test('should return error when user not found', () async {
@@ -230,6 +240,7 @@ void main() {
       test('should accept decimal values', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
         );
@@ -247,6 +258,7 @@ void main() {
       test('should upgrade user to premium', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
         );
@@ -264,11 +276,12 @@ void main() {
       test('should preserve other user properties', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
           hasCompletedOnboarding: true,
           hasAcceptedTerms: true,
-          hasConfirmedAge: true,
+          isOver18: true,
         );
 
         await repository.saveUser(user);
@@ -282,7 +295,7 @@ void main() {
         expect(result.value!.isPremium, true);
         expect(result.value!.hasCompletedOnboarding, true);
         expect(result.value!.hasAcceptedTerms, true);
-        expect(result.value!.hasConfirmedAge, true);
+        expect(result.value!.isOver18, true);
       });
 
       test('should return error when user not found', () async {
@@ -296,6 +309,7 @@ void main() {
       test('should handle already premium user', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: true,
         );
@@ -316,11 +330,12 @@ void main() {
         // Create new user
         final newUser = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
           hasCompletedOnboarding: false,
           hasAcceptedTerms: false,
-          hasConfirmedAge: false,
+          isOver18: false,
         );
 
         await repository.saveUser(newUser);
@@ -330,7 +345,7 @@ void main() {
         final onboarded = user.copyWith(
           hasCompletedOnboarding: true,
           hasAcceptedTerms: true,
-          hasConfirmedAge: true,
+          isOver18: true,
         );
         await repository.saveUser(onboarded);
 
@@ -349,12 +364,13 @@ void main() {
         expect(final_.isPremium, true);
         expect(final_.hasCompletedOnboarding, true);
         expect(final_.hasAcceptedTerms, true);
-        expect(final_.hasConfirmedAge, true);
+        expect(final_.isOver18, true);
       });
 
       test('should handle multiple goal updates', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
         );
@@ -373,6 +389,7 @@ void main() {
       test('should handle user deletion and recreation', () async {
         final user1 = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: true,
         );
@@ -386,6 +403,7 @@ void main() {
         // Create new user
         final user2 = User(
           id: 'user456',
+          createdAt: DateTime(2025, 1, 2),
           weeklyGoalUnits: 21.0,
           isPremium: false,
         );
@@ -401,6 +419,7 @@ void main() {
       test('should maintain data consistency across operations', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: 14.0,
           isPremium: false,
           hasCompletedOnboarding: true,
@@ -424,6 +443,7 @@ void main() {
       test('should handle edge case with null goal', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime(2025, 1, 1),
           weeklyGoalUnits: null,
           isPremium: false,
         );

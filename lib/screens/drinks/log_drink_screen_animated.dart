@@ -25,15 +25,21 @@ class _LogDrinkScreenAnimatedState extends State<LogDrinkScreenAnimated> {
   final TextEditingController _notesController = TextEditingController();
   DateTime _selectedDateTime = DateTime.now();
 
-  // Standard drink types with their units
-  final Map<String, double> _standardUnits = {
-    'Pint of Beer (4%)': 2.3,
-    'Large Wine (250ml)': 3.3,
-    'Small Wine (175ml)': 2.3,
-    'Shot of Spirits': 1.0,
-    'Alcopop (275ml)': 1.5,
-    'Pint of Cider (5%)': 2.8,
-  };
+  // Standard drink types with their units, icons, and descriptions
+  final List<Map<String, dynamic>> _drinkTypes = [
+    {'name': 'Pint of Beer', 'units': 2.3, 'icon': Icons.sports_bar, 'desc': '568ml glass'},
+    {'name': 'Half Pint', 'units': 1.2, 'icon': Icons.local_drink, 'desc': '284ml glass'},
+    {'name': 'Large Wine', 'units': 3.0, 'icon': Icons.wine_bar, 'desc': '250ml glass'},
+    {'name': 'Medium Wine', 'units': 2.1, 'icon': Icons.wine_bar, 'desc': '175ml glass'},
+    {'name': 'Small Wine', 'units': 1.5, 'icon': Icons.wine_bar, 'desc': '125ml glass'},
+    {'name': 'Single Spirit', 'units': 1.0, 'icon': Icons.local_bar, 'desc': '25ml shot'},
+    {'name': 'Double Spirit', 'units': 2.0, 'icon': Icons.local_bar, 'desc': '50ml measure'},
+    {'name': 'Cocktail', 'units': 2.5, 'icon': Icons.nightlife, 'desc': 'Mixed drink'},
+    {'name': 'Pint of Cider', 'units': 2.6, 'icon': Icons.sports_bar, 'desc': '568ml glass'},
+    {'name': 'Alcopop', 'units': 1.5, 'icon': Icons.liquor, 'desc': '275ml bottle'},
+    {'name': 'Prosecco', 'units': 1.5, 'icon': Icons.celebration, 'desc': '125ml flute'},
+    {'name': 'Can of Beer', 'units': 1.8, 'icon': Icons.inventory_2, 'desc': '440ml can'},
+  ];
 
   final List<String> _moods = ['Happy', 'Stressed', 'Sad', 'Bored', 'Anxious', 'Celebrating'];
   final List<String> _contexts = ['Home', 'Bar/Pub', 'Restaurant', 'Party', 'Friend\'s House', 'Other'];
@@ -165,47 +171,99 @@ class _LogDrinkScreenAnimatedState extends State<LogDrinkScreenAnimated> {
   }
 
   Widget _buildDrinkTypeSelector() {
-    return Wrap(
-      spacing: AppTheme.spacing8,
-      runSpacing: AppTheme.spacing8,
-      children: _standardUnits.entries.map((entry) {
-        final isSelected = _selectedDrinkType == entry.key;
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 0.85,
+        crossAxisSpacing: AppTheme.spacing8,
+        mainAxisSpacing: AppTheme.spacing8,
+      ),
+      itemCount: _drinkTypes.length,
+      itemBuilder: (context, index) {
+        final drink = _drinkTypes[index];
+        final isSelected = _selectedDrinkType == drink['name'];
         return GestureDetector(
           onTap: () async {
             await HapticService.selectionClick();
             setState(() {
-              _selectedDrinkType = entry.key;
-              _units = entry.value;
+              _selectedDrinkType = drink['name'] as String;
+              _units = drink['units'] as double;
             });
           },
-          child: AnimatedCard(
-            color: isSelected ? AppTheme.primaryBlue : Colors.white,
-            border: Border.all(
-              color: isSelected ? AppTheme.primaryBlue : AppTheme.textTertiary.withOpacity(0.3),
-              width: 2,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.all(AppTheme.spacing8),
+            decoration: BoxDecoration(
+              color: isSelected ? AppTheme.primaryBlue : AppTheme.cardBackground,
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              border: Border.all(
+                color: isSelected ? AppTheme.primaryBlue : AppTheme.textTertiary.withOpacity(0.2),
+                width: 2,
+              ),
+              boxShadow: isSelected ? [
+                BoxShadow(
+                  color: AppTheme.primaryBlue.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ] : null,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  entry.key,
-                  style: AppTheme.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: isSelected ? Colors.white : AppTheme.textPrimary,
-                  ),
+                Icon(
+                  drink['icon'] as IconData,
+                  size: 28,
+                  color: isSelected ? Colors.white : AppTheme.primaryBlue,
                 ),
                 const SizedBox(height: AppTheme.spacing4),
                 Text(
-                  '${entry.value} units',
+                  drink['name'] as String,
                   style: AppTheme.bodySmall.copyWith(
-                    color: isSelected ? Colors.white70 : AppTheme.textSecondary,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? Colors.white : AppTheme.textPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: AppTheme.spacing4),
+                Text(
+                  drink['desc'] as String,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isSelected ? Colors.white70 : AppTheme.textTertiary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppTheme.spacing4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.spacing6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? Colors.white.withOpacity(0.2)
+                        : AppTheme.primaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  ),
+                  child: Text(
+                    '${drink['units']} units',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? Colors.white : AppTheme.primaryBlue,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
         );
-      }).toList(),
+      },
     );
   }
 
@@ -223,7 +281,7 @@ class _LogDrinkScreenAnimatedState extends State<LogDrinkScreenAnimated> {
             });
           },
           child: AnimatedCard(
-            color: isSelected ? AppTheme.secondaryGreen : Colors.white,
+            color: isSelected ? AppTheme.secondaryGreen : AppTheme.cardBackground,
             border: Border.all(
               color: isSelected ? AppTheme.secondaryGreen : AppTheme.textTertiary.withOpacity(0.3),
               width: 2,
@@ -255,7 +313,7 @@ class _LogDrinkScreenAnimatedState extends State<LogDrinkScreenAnimated> {
             });
           },
           child: AnimatedCard(
-            color: isSelected ? AppTheme.accentPurple : Colors.white,
+            color: isSelected ? AppTheme.accentPurple : AppTheme.cardBackground,
             border: Border.all(
               color: isSelected ? AppTheme.accentPurple : AppTheme.textTertiary.withOpacity(0.3),
               width: 2,

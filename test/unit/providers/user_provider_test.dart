@@ -27,6 +27,7 @@ void main() {
       test('should load existing user successfully', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime.now(),
           weeklyGoalUnits: 14.0,
           isPremium: false,
           hasCompletedOnboarding: true,
@@ -96,6 +97,7 @@ void main() {
       test('should preserve other properties', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime.now(),
           weeklyGoalUnits: 14.0,
           isPremium: true,
         );
@@ -129,6 +131,7 @@ void main() {
       test('should preserve other properties', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime.now(),
           weeklyGoalUnits: 14.0,
           isOver18: true,
         );
@@ -173,6 +176,7 @@ void main() {
       test('should preserve other properties', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime.now(),
           isOver18: true,
           hasAcceptedTerms: true,
         );
@@ -235,6 +239,7 @@ void main() {
       test('should preserve other properties', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime.now(),
           weeklyGoalUnits: 14.0,
           isPremium: true,
           hasCompletedOnboarding: true,
@@ -270,6 +275,7 @@ void main() {
       test('should preserve other properties', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime.now(),
           weeklyGoalUnits: 14.0,
           hasCompletedOnboarding: true,
         );
@@ -286,6 +292,7 @@ void main() {
       test('should handle already premium user', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime.now(),
           isPremium: true,
         );
 
@@ -303,6 +310,7 @@ void main() {
       test('should clear user data', () async {
         final user = User(
           id: 'user123',
+          createdAt: DateTime.now(),
           weeklyGoalUnits: 14.0,
           isPremium: true,
         );

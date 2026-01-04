@@ -86,11 +86,12 @@ class MockUserProvider extends UserProvider {
 
   final User _mockUser = User(
     id: 'test-user',
+    createdAt: DateTime.now(),
     weeklyGoalUnits: 14.0,
     isPremium: false,
     hasCompletedOnboarding: true,
     hasAcceptedTerms: true,
-    hasConfirmedAge: true,
+    isOver18: true,
   );
 }
 

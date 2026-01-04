@@ -65,7 +65,7 @@ class _AnimatedCardState extends State<AnimatedCard>
           padding: widget.padding ?? const EdgeInsets.all(AppTheme.spacing16),
           decoration: BoxDecoration(
             gradient: widget.gradient,
-            color: widget.color ?? AppTheme.surfaceWhite,
+            color: widget.color ?? AppTheme.cardBackground,
             borderRadius: BorderRadius.circular(widget.borderRadius),
             border: widget.border,
             boxShadow: widget.boxShadow ??

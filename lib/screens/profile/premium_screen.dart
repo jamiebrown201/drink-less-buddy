@@ -367,8 +367,14 @@ class PremiumScreen extends StatelessWidget {
     Navigator.of(context).pop();
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Welcome to Premium! 🎉'),
+      SnackBar(
+        content: Row(
+          children: const [
+            Icon(Icons.star, color: Colors.white, size: 20),
+            SizedBox(width: 8),
+            Text('Welcome to Premium!'),
+          ],
+        ),
         backgroundColor: AppConstants.secondaryColor,
       ),
     );

@@ -17,20 +17,16 @@ class WelcomeScreenAnimated extends StatefulWidget {
 }
 
 class _WelcomeScreenAnimatedState extends State<WelcomeScreenAnimated> {
-  final TextEditingController _goalController = TextEditingController();
-  bool _useUKGuideline = true;
+  bool _useRecommendedLimit = true;
+  double _customGoal = 14.0;
 
-  @override
-  void initState() {
-    super.initState();
-    _goalController.text = '14.0';
-  }
-
-  @override
-  void dispose() {
-    _goalController.dispose();
-    super.dispose();
-  }
+  // Preset goal options for easy selection
+  final List<Map<String, dynamic>> _goalPresets = [
+    {'units': 7.0, 'label': '7 units', 'desc': 'Very low risk'},
+    {'units': 10.0, 'label': '10 units', 'desc': 'Low risk'},
+    {'units': 14.0, 'label': '14 units', 'desc': 'Moderate'},
+    {'units': 21.0, 'label': '21 units', 'desc': 'Higher risk'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +83,7 @@ class _WelcomeScreenAnimatedState extends State<WelcomeScreenAnimated> {
               _buildFeatureCard(
                 Icons.insights,
                 'Personalized Feedback',
-                'See patterns in your drinking and compare to UK guidelines. 31% average reduction.',
+                'See patterns in your drinking and compare to recommended limits. 31% average reduction.',
                 AppTheme.secondaryGreen,
               ),
               const SizedBox(height: AppTheme.spacing16),
@@ -123,46 +119,42 @@ class _WelcomeScreenAnimatedState extends State<WelcomeScreenAnimated> {
                 child: Column(
                   children: [
                     CheckboxListTile(
-                      value: _useUKGuideline,
+                      value: _useRecommendedLimit,
                       onChanged: (value) async {
                         await HapticService.selectionClick();
                         setState(() {
-                          _useUKGuideline = value ?? false;
-                          if (_useUKGuideline) {
-                            _goalController.text = '14.0';
+                          _useRecommendedLimit = value ?? false;
+                          if (_useRecommendedLimit) {
+                            _customGoal = 14.0;
                           }
                         });
                       },
                       title: Text(
-                        'Use UK Chief Medical Officers\' guideline',
+                        'Use recommended low-risk limit',
                         style: AppTheme.bodyMedium,
                       ),
                       subtitle: Text(
-                        '14 units per week',
+                        '14 units per week (UK CMO guideline)',
                         style: AppTheme.bodySmall,
                       ),
                       controlAffinity: ListTileControlAffinity.leading,
                       activeColor: AppTheme.secondaryGreen,
                       contentPadding: EdgeInsets.zero,
                     ),
-                    if (!_useUKGuideline) ...[
-                      const SizedBox(height: AppTheme.spacing16),
-                      TextField(
-                        controller: _goalController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        style: AppTheme.bodyMedium,
-                        decoration: InputDecoration(
-                          labelText: 'Weekly Goal (units)',
-                          labelStyle: AppTheme.bodyMedium.copyWith(
-                            color: AppTheme.textSecondary,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                          ),
-                          suffixText: 'units/week',
-                          suffixStyle: AppTheme.bodySmall,
+                    const SizedBox(height: AppTheme.spacing16),
+                    _buildDrinkEquivalents(),
+                    if (!_useRecommendedLimit) ...[
+                      const SizedBox(height: AppTheme.spacing20),
+                      Text(
+                        'Or choose a different goal:',
+                        style: AppTheme.bodyMedium.copyWith(
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
+                      const SizedBox(height: AppTheme.spacing12),
+                      _buildGoalSelector(),
+                      const SizedBox(height: AppTheme.spacing16),
+                      _buildGoalSlider(),
                     ],
                   ],
                 ),
@@ -179,6 +171,202 @@ class _WelcomeScreenAnimatedState extends State<WelcomeScreenAnimated> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildGoalSelector() {
+    return Wrap(
+      spacing: AppTheme.spacing8,
+      runSpacing: AppTheme.spacing8,
+      children: _goalPresets.map((preset) {
+        final isSelected = _customGoal == preset['units'];
+        return GestureDetector(
+          onTap: () async {
+            await HapticService.selectionClick();
+            setState(() {
+              _customGoal = preset['units'] as double;
+            });
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacing16,
+              vertical: AppTheme.spacing12,
+            ),
+            decoration: BoxDecoration(
+              color: isSelected ? AppTheme.primaryBlue : AppTheme.cardBackground,
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              border: Border.all(
+                color: isSelected ? AppTheme.primaryBlue : AppTheme.textTertiary.withOpacity(0.3),
+                width: 2,
+              ),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  preset['label'] as String,
+                  style: AppTheme.titleMedium.copyWith(
+                    color: isSelected ? Colors.white : AppTheme.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  preset['desc'] as String,
+                  style: AppTheme.bodySmall.copyWith(
+                    color: isSelected ? Colors.white70 : AppTheme.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildGoalSlider() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Fine-tune:',
+              style: AppTheme.bodySmall.copyWith(color: AppTheme.textSecondary),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacing12,
+                vertical: AppTheme.spacing4,
+              ),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryBlue,
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+              ),
+              child: Text(
+                '${_customGoal.toStringAsFixed(0)} units/week',
+                style: AppTheme.bodyMedium.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: AppTheme.primaryBlue,
+            inactiveTrackColor: AppTheme.primaryBlue.withOpacity(0.2),
+            thumbColor: AppTheme.primaryBlue,
+            overlayColor: AppTheme.primaryBlue.withOpacity(0.2),
+            trackHeight: 6,
+          ),
+          child: Slider(
+            value: _customGoal,
+            min: 1,
+            max: 30,
+            divisions: 29,
+            onChanged: (value) async {
+              await HapticService.selectionClick();
+              setState(() {
+                _customGoal = value;
+              });
+            },
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('1', style: AppTheme.bodySmall.copyWith(color: AppTheme.textTertiary)),
+            Text('30', style: AppTheme.bodySmall.copyWith(color: AppTheme.textTertiary)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDrinkEquivalents() {
+    // Calculate equivalents based on standard UK units
+    final pints = (_customGoal / 2.3).floor(); // Pint of beer = 2.3 units
+    final largeWines = (_customGoal / 3.0).floor(); // Large wine = 3 units
+    final shots = _customGoal.floor(); // Single spirit = 1 unit
+
+    return Container(
+      padding: const EdgeInsets.all(AppTheme.spacing16),
+      decoration: BoxDecoration(
+        color: AppTheme.primaryBlue.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        border: Border.all(
+          color: AppTheme.primaryBlue.withOpacity(0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'That\'s equivalent to:',
+            style: AppTheme.bodySmall.copyWith(
+              color: AppTheme.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: AppTheme.spacing12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildEquivalentItem(Icons.sports_bar, '$pints', 'pints'),
+              Text(
+                'or',
+                style: AppTheme.bodySmall.copyWith(
+                  color: AppTheme.textTertiary,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              _buildEquivalentItem(Icons.wine_bar, '$largeWines', 'large wines'),
+              Text(
+                'or',
+                style: AppTheme.bodySmall.copyWith(
+                  color: AppTheme.textTertiary,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              _buildEquivalentItem(Icons.local_bar, '$shots', 'shots'),
+            ],
+          ),
+          const SizedBox(height: AppTheme.spacing8),
+          Center(
+            child: Text(
+              'per week',
+              style: AppTheme.bodySmall.copyWith(
+                color: AppTheme.textTertiary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEquivalentItem(IconData icon, String count, String label) {
+    return Column(
+      children: [
+        Icon(icon, color: AppTheme.primaryBlue, size: 28),
+        const SizedBox(height: AppTheme.spacing4),
+        Text(
+          count,
+          style: AppTheme.titleLarge.copyWith(
+            color: AppTheme.primaryBlue,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: AppTheme.bodySmall.copyWith(
+            color: AppTheme.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 
@@ -230,20 +418,8 @@ class _WelcomeScreenAnimatedState extends State<WelcomeScreenAnimated> {
   void _completeOnboarding() async {
     await HapticService.mediumImpact();
 
-    final goal = double.tryParse(_goalController.text);
-    if (goal == null || goal <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please enter a valid weekly goal'),
-          backgroundColor: AppTheme.dangerRose,
-        ),
-      );
-      await HapticService.error();
-      return;
-    }
-
     final userProvider = context.read<UserProvider>();
-    final success = await userProvider.completeOnboarding(weeklyGoal: goal);
+    final success = await userProvider.completeOnboarding(weeklyGoal: _customGoal);
 
     if (!mounted) return;
 

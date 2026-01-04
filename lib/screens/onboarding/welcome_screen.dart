@@ -39,7 +39,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             children: [
               const SizedBox(height: 32),
               const Text(
-                '👋 Welcome to\nDrink Less Buddy',
+                'Welcome to\nDrink Less Buddy',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,

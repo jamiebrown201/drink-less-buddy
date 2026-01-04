@@ -181,16 +181,26 @@ class AnalyticsTab extends StatelessWidget {
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(
-              isOverGoal
-                  ? '⚠️ You\'re ${(weekUnits - goalUnits).toStringAsFixed(1)} units over your goal'
-                  : '✅ You\'re ${(goalUnits - weekUnits).toStringAsFixed(1)} units under your goal',
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  isOverGoal ? Icons.warning_amber_rounded : Icons.check_circle_outline,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  isOverGoal
+                      ? 'You\'re ${(weekUnits - goalUnits).toStringAsFixed(1)} units over your goal'
+                      : 'You\'re ${(goalUnits - weekUnits).toStringAsFixed(1)} units under your goal',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

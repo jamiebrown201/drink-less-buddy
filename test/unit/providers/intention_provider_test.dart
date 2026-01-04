@@ -23,16 +23,16 @@ void main() {
     group('loadIntentions', () {
       test('should load intentions successfully', () async {
         await repository.saveIntention(Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'No drinking today',
-          maxUnits: 0,
+          activity: 'No drinking today',
           userId: 'user123',
         ));
 
         await provider.loadIntentions();
 
         expect(provider.intentions, hasLength(1));
-        expect(provider.intentions.first.description, 'No drinking today');
+        expect(provider.intentions.first.activity, 'No drinking today');
         expect(provider.isLoading, false);
         expect(provider.error, isNull);
       });
@@ -66,9 +66,9 @@ void main() {
     group('addIntention', () {
       test('should add intention successfully', () async {
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'No drinking today',
-          maxUnits: 0,
+          activity: 'No drinking today',
           userId: 'user123',
         );
 
@@ -86,9 +86,9 @@ void main() {
         });
 
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'No drinking today',
-          maxUnits: 0,
+          activity: 'No drinking today',
           userId: 'user123',
         );
 
@@ -99,16 +99,16 @@ void main() {
 
       test('should append to existing intentions', () async {
         final intention1 = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime(2024, 1, 1),
-          description: 'First intention',
-          maxUnits: 0,
+          activity: 'First intention',
           userId: 'user123',
         );
 
         final intention2 = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime(2024, 1, 2),
-          description: 'Second intention',
-          maxUnits: 2,
+          activity: 'Second intention',
           userId: 'user123',
         );
 
@@ -122,9 +122,9 @@ void main() {
     group('updateIntention', () {
       test('should update existing intention', () async {
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'No drinking today',
-          maxUnits: 0,
+          activity: 'No drinking today',
           userId: 'user123',
         );
 
@@ -132,30 +132,29 @@ void main() {
 
         final updated = Intention(
           id: intention.id,
+          createdAt: intention.createdAt,
           intentionDate: intention.intentionDate,
-          description: 'Updated description',
-          maxUnits: 2,
+          activity: 'Updated activity',
           userId: 'user123',
         );
 
         final success = await provider.updateIntention(updated);
 
         expect(success, true);
-        expect(provider.intentions.first.description, 'Updated description');
-        expect(provider.intentions.first.maxUnits, 2);
+        expect(provider.intentions.first.activity, 'Updated activity');
       });
 
       test('should preserve intention count', () async {
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'Original',
-          maxUnits: 0,
+          activity: 'Original',
           userId: 'user123',
         );
 
         await provider.addIntention(intention);
 
-        final updated = intention.copyWith(description: 'Updated');
+        final updated = intention.copyWith(activity: 'Updated');
 
         await provider.updateIntention(updated);
 
@@ -166,9 +165,9 @@ void main() {
     group('completeIntention', () {
       test('should mark intention as completed', () async {
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'No drinking today',
-          maxUnits: 0,
+          activity: 'No drinking today',
           userId: 'user123',
           isCompleted: false,
         );
@@ -183,9 +182,9 @@ void main() {
 
       test('should preserve other properties', () async {
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime(2024, 1, 1),
-          description: 'No drinking today',
-          maxUnits: 0,
+          activity: 'No drinking today',
           userId: 'user123',
           isCompleted: false,
         );
@@ -195,8 +194,7 @@ void main() {
         await provider.completeIntention(intention.id);
 
         final completed = provider.intentions.first;
-        expect(completed.description, 'No drinking today');
-        expect(completed.maxUnits, 0);
+        expect(completed.activity, 'No drinking today');
         expect(completed.intentionDate, DateTime(2024, 1, 1));
       });
     });
@@ -204,9 +202,9 @@ void main() {
     group('deleteIntention', () {
       test('should delete intention successfully', () async {
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'No drinking today',
-          maxUnits: 0,
+          activity: 'No drinking today',
           userId: 'user123',
         );
 
@@ -220,16 +218,16 @@ void main() {
 
       test('should only delete specified intention', () async {
         final intention1 = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'First',
-          maxUnits: 0,
+          activity: 'First',
           userId: 'user123',
         );
 
         final intention2 = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'Second',
-          maxUnits: 2,
+          activity: 'Second',
           userId: 'user123',
         );
 
@@ -239,7 +237,7 @@ void main() {
         await provider.deleteIntention(intention1.id);
 
         expect(provider.intentions, hasLength(1));
-        expect(provider.intentions.first.description, 'Second');
+        expect(provider.intentions.first.activity, 'Second');
       });
     });
 
@@ -249,16 +247,16 @@ void main() {
         final tomorrow = today.add(const Duration(days: 1));
 
         final todayIntention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: today,
-          description: 'Today',
-          maxUnits: 0,
+          activity: 'Today',
           userId: 'user123',
         );
 
         final tomorrowIntention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: tomorrow,
-          description: 'Tomorrow',
-          maxUnits: 2,
+          activity: 'Tomorrow',
           userId: 'user123',
         );
 
@@ -268,16 +266,16 @@ void main() {
         final todayList = provider.getTodayIntentions();
 
         expect(todayList, hasLength(1));
-        expect(todayList.first.description, 'Today');
+        expect(todayList.first.activity, 'Today');
       });
 
       test('should return empty list when no intentions for today', () async {
         final tomorrow = DateTime.now().add(const Duration(days: 1));
 
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: tomorrow,
-          description: 'Tomorrow',
-          maxUnits: 0,
+          activity: 'Tomorrow',
           userId: 'user123',
         );
 
@@ -294,9 +292,9 @@ void main() {
         final tomorrow = DateTime.now().add(const Duration(days: 1));
 
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: tomorrow,
-          description: 'Tomorrow',
-          maxUnits: 0,
+          activity: 'Tomorrow',
           userId: 'user123',
         );
 
@@ -305,7 +303,7 @@ void main() {
         final tomorrowList = provider.getTomorrowIntentions();
 
         expect(tomorrowList, hasLength(1));
-        expect(tomorrowList.first.description, 'Tomorrow');
+        expect(tomorrowList.first.activity, 'Tomorrow');
       });
     });
 
@@ -314,17 +312,17 @@ void main() {
         final today = DateTime.now();
 
         final completed = Intention(
+          createdAt: DateTime.now(),
           intentionDate: today,
-          description: 'Completed',
-          maxUnits: 0,
+          activity: 'Completed',
           userId: 'user123',
           isCompleted: true,
         );
 
         final incomplete = Intention(
+          createdAt: DateTime.now(),
           intentionDate: today,
-          description: 'Incomplete',
-          maxUnits: 2,
+          activity: 'Incomplete',
           userId: 'user123',
           isCompleted: false,
         );
@@ -335,7 +333,7 @@ void main() {
         final incompleteList = provider.getTodayIncompleteIntentions();
 
         expect(incompleteList, hasLength(1));
-        expect(incompleteList.first.description, 'Incomplete');
+        expect(incompleteList.first.activity, 'Incomplete');
       });
     });
 
@@ -344,25 +342,25 @@ void main() {
         final today = DateTime.now();
 
         final completed1 = Intention(
+          createdAt: DateTime.now(),
           intentionDate: today,
-          description: 'Done 1',
-          maxUnits: 0,
+          activity: 'Done 1',
           userId: 'user123',
           isCompleted: true,
         );
 
         final completed2 = Intention(
+          createdAt: DateTime.now(),
           intentionDate: today,
-          description: 'Done 2',
-          maxUnits: 0,
+          activity: 'Done 2',
           userId: 'user123',
           isCompleted: true,
         );
 
         final incomplete = Intention(
+          createdAt: DateTime.now(),
           intentionDate: today,
-          description: 'Not done',
-          maxUnits: 2,
+          activity: 'Not done',
           userId: 'user123',
           isCompleted: false,
         );
@@ -386,9 +384,9 @@ void main() {
         final today = DateTime.now();
 
         final completed = Intention(
+          createdAt: DateTime.now(),
           intentionDate: today,
-          description: 'Done',
-          maxUnits: 0,
+          activity: 'Done',
           userId: 'user123',
           isCompleted: true,
         );
@@ -406,9 +404,9 @@ void main() {
         final tomorrow = DateTime.now().add(const Duration(days: 1));
 
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: tomorrow,
-          description: 'Tomorrow',
-          maxUnits: 0,
+          activity: 'Tomorrow',
           userId: 'user123',
         );
 
@@ -428,16 +426,16 @@ void main() {
         final otherDate = DateTime(2024, 1, 16);
 
         final target = Intention(
+          createdAt: DateTime.now(),
           intentionDate: targetDate,
-          description: 'Target date',
-          maxUnits: 0,
+          activity: 'Target date',
           userId: 'user123',
         );
 
         final other = Intention(
+          createdAt: DateTime.now(),
           intentionDate: otherDate,
-          description: 'Other date',
-          maxUnits: 2,
+          activity: 'Other date',
           userId: 'user123',
         );
 
@@ -447,7 +445,7 @@ void main() {
         final list = provider.getIntentionsForDate(targetDate);
 
         expect(list, hasLength(1));
-        expect(list.first.description, 'Target date');
+        expect(list.first.activity, 'Target date');
       });
 
       test('should ignore time component', () async {
@@ -456,16 +454,16 @@ void main() {
         final evening = DateTime(2024, 1, 15, 20, 0);
 
         final morningIntention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: morning,
-          description: 'Morning',
-          maxUnits: 0,
+          activity: 'Morning',
           userId: 'user123',
         );
 
         final eveningIntention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: evening,
-          description: 'Evening',
-          maxUnits: 2,
+          activity: 'Evening',
           userId: 'user123',
         );
 
@@ -481,16 +479,16 @@ void main() {
     group('clearAllIntentions', () {
       test('should clear all intentions', () async {
         final intention1 = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'First',
-          maxUnits: 0,
+          activity: 'First',
           userId: 'user123',
         );
 
         final intention2 = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'Second',
-          maxUnits: 2,
+          activity: 'Second',
           userId: 'user123',
         );
 
@@ -508,9 +506,9 @@ void main() {
       test('should handle full intention lifecycle', () async {
         // Add intention
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'No drinking today',
-          maxUnits: 0,
+          activity: 'No drinking today',
           userId: 'user123',
           isCompleted: false,
         );
@@ -519,9 +517,9 @@ void main() {
         expect(provider.intentions, hasLength(1));
 
         // Update intention
-        final updated = intention.copyWith(description: 'Updated');
+        final updated = intention.copyWith(activity: 'Updated');
         await provider.updateIntention(updated);
-        expect(provider.intentions.first.description, 'Updated');
+        expect(provider.intentions.first.activity, 'Updated');
 
         // Complete intention
         await provider.completeIntention(intention.id);
@@ -539,9 +537,9 @@ void main() {
         });
 
         final intention = Intention(
+          createdAt: DateTime.now(),
           intentionDate: DateTime.now(),
-          description: 'Test',
-          maxUnits: 0,
+          activity: 'Test',
           userId: 'user123',
         );
 

@@ -77,12 +77,12 @@ void main() {
 
       expect(json['id'], 'test-id');
       expect(json['timestamp'], timestamp.toIso8601String());
-      expect(json['drinkType'], 'Pint of Beer (4%)');
+      expect(json['drink_type'], 'Pint of Beer (4%)');
       expect(json['units'], 2.3);
       expect(json['mood'], 'Happy');
       expect(json['context'], 'Bar/Pub');
       expect(json['notes'], 'Test notes');
-      expect(json['userId'], 'user123');
+      expect(json['user_id'], 'user123');
     });
 
     test('should deserialize from JSON correctly', () {
@@ -90,12 +90,12 @@ void main() {
       final json = {
         'id': 'test-id',
         'timestamp': timestamp.toIso8601String(),
-        'drinkType': 'Pint of Beer (4%)',
+        'drink_type': 'Pint of Beer (4%)',
         'units': 2.3,
         'mood': 'Happy',
         'context': 'Bar/Pub',
         'notes': 'Test notes',
-        'userId': 'user123',
+        'user_id': 'user123',
       };
 
       final drink = Drink.fromJson(json);
@@ -114,11 +114,11 @@ void main() {
       final json = {
         'id': 'test-id',
         'timestamp': DateTime.now().toIso8601String(),
-        'drinkType': 'Beer',
+        'drink_type': 'Beer',
         'units': 2.0,
         'mood': 'Happy',
         'context': 'Home',
-        'userId': 'user123',
+        'user_id': 'user123',
         'notes': null,
       };
 
